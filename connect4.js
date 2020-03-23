@@ -30,6 +30,7 @@ const makeHtmlBoard = () => {
   for (let x = 0; x < WIDTH; x++) {
     let headCell = document.createElement("td");
     headCell.setAttribute("id", `h${x}`);
+    // headCell.className = "head-cells";
     top.append(headCell);
   }
   htmlBoard.append(top);
@@ -75,7 +76,13 @@ const placeInTable = (y, x) => {
 /** endGame: announce game end */
 const endGame = msg => {
   // pop up alert message
-  alert(msg);
+  setTimeout(() => {
+    alert(msg);
+    htmlBoard.innerHTML = '';
+    currPlayer = 1;
+    makeBoard();
+    makeHtmlBoard();
+  }, 500)
 }
 
 /** handleClick: handle click of column top to play piece */
@@ -94,7 +101,8 @@ const handleClick = evt => {
 
   // check for win
   if (checkForWin(y, x)) {
-    return endGame(`Player ${currPlayer} won!`);
+    let color = currPlayer == 1 ? 'red' : 'blue';
+    return endGame(`Player ${color} won!`);
   }
 
   // check for tie
@@ -106,6 +114,20 @@ const handleClick = evt => {
   currPlayer = currPlayer == 1 ? 2 : 1;
 }
 
+
+/** checkForWin: check each direction both ways to see if last move produces
+ *  a 4 consecutive colors in a row, column, or diagnal.
+ */
+const checkForWin = (y, x) => {  
+  for(let [r1,c1, r2,c2] of [[-1,-1,1,1],[-1,0,1,0],[-1,1,1,-1],[0,1,0,-1]]) {  
+    let cnt = 1;  
+    cnt += checkForWinHelper(y + r1, x + c1, r1, c1);
+    cnt += checkForWinHelper(y + r2, x + c2, r2, c2); 
+    if(cnt >= 4) return true;      
+  }  
+  return false;
+}
+/** checkForWinHelper: counts each match in one direction from [y,x] location */
 const checkForWinHelper = (r, c, y, x) => {
   if(r < 0 || c < 0 || r > 5 || c > 6) return 0;
   let cnt = 0;
@@ -116,50 +138,8 @@ const checkForWinHelper = (r, c, y, x) => {
   }
   return cnt;
 }
-/** checkForWin: check board cell-by-cell for "does a win start here?" */
-const checkForWin = (y, x) => {
-  
-  for(let [r1,c1, r2,c2] of [[-1,-1,1,1],[-1,0,1,0],[-1,1,1,-1],[0,1,0,-1]]) {  
-    let cnt = 1;  
-    cnt += checkForWinHelper(y + r1, x + c1, r1, c1);
-    cnt += checkForWinHelper(y + r2, x + c2, r2, c2); 
-    if(cnt >= 4) return true;      
-  }
-  
-  return false;
-  
-  // function _win(cells) {
-  //   // Check four cells to see if they're all color of current player
-  //   //  - cells: list of four (y, x) cells
-  //   //  - returns true if all are legal coordinates & all match currPlayer
 
-  //   return cells.every(
-  //     ([y, x]) =>
-  //       y >= 0 &&
-  //       y < HEIGHT &&
-  //       x >= 0 &&
-  //       x < WIDTH &&
-  //       board[y][x] === currPlayer
-  //   );
-  // }
-
-  // // TODO: read and understand this code. Add comments to help you.
-
-  // for (let y = 0; y < HEIGHT; y++) {
-  //   for (let x = 0; x < WIDTH; x++) {
-  //     let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
-  //     let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
-  //     let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
-  //     let diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
-
-  //     if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
-  //       return true;
-  //     }
-  //   }
-  // }
-}
-
-/* check for tie */
+/* checkForTie: check for tie */
 const checkForTie = () => {
   if(!board.some(e => e.some(f => !f))) {
     return true;
