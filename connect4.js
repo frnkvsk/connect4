@@ -30,7 +30,6 @@ const makeHtmlBoard = () => {
   for (let x = 0; x < WIDTH; x++) {
     let headCell = document.createElement("td");
     headCell.setAttribute("id", `h${x}`);
-    // headCell.className = "head-cells";
     top.append(headCell);
   }
   htmlBoard.append(top);
@@ -63,7 +62,8 @@ const placeInTable = (y, x) => {
   // make a div and insert into correct table cell
   const td = document.createElement('td');
   const target = document.querySelector(`#b${y}-${x}`);
-  td.className = "piece";
+  td.classList.add("piece");
+  td.classList.add(`p${y}`);
   if(currPlayer == 1) {    
     td.style.backgroundColor = 'red';
   } else {
@@ -82,7 +82,7 @@ const endGame = msg => {
     currPlayer = 1;
     makeBoard();
     makeHtmlBoard();
-  }, 500)
+  }, 1500)
 }
 
 /** handleClick: handle click of column top to play piece */
@@ -129,7 +129,6 @@ const checkForWin = (y, x) => {
 }
 /** checkForWinHelper: counts each match in one direction from [y,x] location */
 const checkForWinHelper = (r, c, y, x) => {
-  if(r < 0 || c < 0 || r > 5 || c > 6) return 0;
   let cnt = 0;
   while(r >= 0 && c >= 0 && r < 6 && c < 7 && board[r][c] == currPlayer) {
     cnt++;
