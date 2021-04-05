@@ -1,3 +1,3 @@
 # connect4
-Connect Four game for Springboard class
+Connect Four game
 https://frnkvsk.github.io/connect4/
